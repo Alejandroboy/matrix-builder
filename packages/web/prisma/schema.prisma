@@ -1,0 +1,50 @@
+// packages/web/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  created
+  paid
+  canceled
+}
+
+enum ProductType {
+  personal      // личный PDF-разбор
+  compatibility // PDF совместимости пары
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  status      OrderStatus @default(created)
+  productType ProductType
+  // Полный вход: { birthDateA, nameA, birthDateB?, nameB? }. JSON осознанно:
+  // PDF генерируется на лету из этих данных при каждом скачивании (паттерн Неустойки).
+  input       Json
+  amount      Int // копейки
+
+  yookassaPaymentId String?   @unique
+  createdAt         DateTime  @default(now())
+  paidAt            DateTime?
+
+  @@index([status, createdAt])
+}
+
+// Лид переходного периода: пара попала на аркан без контента —
+// вместо продажи пустоты собираем email и шлём письмо, когда контент готов.
+model Lead {
+  id             String   @id @default(cuid())
+  email          String
+  productType    ProductType
+  input          Json
+  missingArcana  Int[]
+  createdAt      DateTime @default(now())
+  notifiedAt     DateTime?
+
+  @@index([notifiedAt, createdAt])
+}
