@@ -1,0 +1,27 @@
+{
+  "_comment": "DRAFT. temperaments: редакторское соответствие аркан->темперамент, назначено черновой логикой архетипов, ПОДЛЕЖИТ РЕВИЗИИ при погружении в методику. rules: synthesis/advice — заглушки-каркасы [DRAFT], заменить настоящими текстами 150-250/100-150 слов на конвейере контента.",
+  "temperaments": {
+    "1": "leader", "2": "dreamer", "3": "stabilizer", "4": "leader", "5": "analyst",
+    "6": "dreamer", "7": "leader", "8": "analyst", "9": "analyst", "10": "rebel",
+    "11": "leader", "12": "dreamer", "13": "rebel", "14": "stabilizer", "15": "rebel",
+    "16": "rebel", "17": "dreamer", "18": "dreamer", "19": "leader", "20": "analyst",
+    "21": "stabilizer", "22": "rebel"
+  },
+  "rules": [
+    { "id": "leader-leader", "match": ["leader", "leader"], "synthesis": "[DRAFT] Союз двух ведущих: много энергии, риск борьбы за руль.", "advice": "[DRAFT] Разделить зоны, где ведёт каждый." },
+    { "id": "leader-analyst", "match": ["leader", "analyst"], "synthesis": "[DRAFT] Напор и расчёт: скорость решений против их качества.", "advice": "[DRAFT] Договориться о праве вето на крупные шаги." },
+    { "id": "leader-dreamer", "match": ["leader", "dreamer"], "synthesis": "[DRAFT] Движение и смысл: один делает, другой наполняет зачем.", "advice": "[DRAFT] Беречь пространство чувств от эффективности." },
+    { "id": "leader-stabilizer", "match": ["leader", "stabilizer"], "synthesis": "[DRAFT] Мотор и фундамент: рывки против ровного хода.", "advice": "[DRAFT] Планировать перемены заранее, не с порога." },
+    { "id": "leader-rebel", "match": ["leader", "rebel"], "synthesis": "[DRAFT] Напор и непредсказуемость: яркая, взрывная динамика.", "advice": "[DRAFT] Правила минимальны, но нерушимы." },
+    { "id": "analyst-analyst", "match": ["analyst", "analyst"], "synthesis": "[DRAFT] Два наблюдателя: глубина понимания, дефицит спонтанности.", "advice": "[DRAFT] Назначать импульсивность по расписанию — и нарушать его." },
+    { "id": "analyst-dreamer", "match": ["analyst", "dreamer"], "synthesis": "[DRAFT] Логика и интуиция: перевод с языка на язык.", "advice": "[DRAFT] Не проверять чувства фактами." },
+    { "id": "analyst-stabilizer", "match": ["analyst", "stabilizer"], "synthesis": "[DRAFT] Система и опора: самый предсказуемый из союзов.", "advice": "[DRAFT] Планировать не только быт, но и радость." },
+    { "id": "analyst-rebel", "match": ["analyst", "rebel"], "synthesis": "[DRAFT] Порядок и хаос: взаимное восхищение и раздражение.", "advice": "[DRAFT] Хаосу — песочница, порядку — граница." },
+    { "id": "dreamer-dreamer", "match": ["dreamer", "dreamer"], "synthesis": "[DRAFT] Два внутренних мира: глубокая близость, слабый быт.", "advice": "[DRAFT] Взрослые задачи делить явно, не по умолчанию." },
+    { "id": "dreamer-stabilizer", "match": ["dreamer", "stabilizer"], "synthesis": "[DRAFT] Полёт и земля: одному тепло, другому просторно.", "advice": "[DRAFT] Не приземлять мечты словом «нереально»." },
+    { "id": "dreamer-rebel", "match": ["dreamer", "rebel"], "synthesis": "[DRAFT] Чувство и буря: сильные эмоции в обе стороны.", "advice": "[DRAFT] Штормовые дни объявлять заранее." },
+    { "id": "stabilizer-stabilizer", "match": ["stabilizer", "stabilizer"], "synthesis": "[DRAFT] Два берега: надёжность, рискующая стать тишиной.", "advice": "[DRAFT] Раз в сезон менять декорации намеренно." },
+    { "id": "stabilizer-rebel", "match": ["stabilizer", "rebel"], "synthesis": "[DRAFT] Уклад и слом: один хранит, другой обновляет.", "advice": "[DRAFT] Обновлять по очереди, не всё сразу." },
+    { "id": "rebel-rebel", "match": ["rebel", "rebel"], "synthesis": "[DRAFT] Две стихии: никогда не скучно, редко спокойно.", "advice": "[DRAFT] Договориться, что не сжигаем при любой погоде." }
+  ]
+}

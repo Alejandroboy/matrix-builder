@@ -1,0 +1,9 @@
+{
+  "name": "matrix",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "yarn workspace @matrix/engine build && yarn workspace @matrix/docgen build",
+    "test": "yarn workspace @matrix/engine test && yarn workspace @matrix/docgen test"
+  }
+}
