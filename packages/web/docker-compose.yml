@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: matrix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: matrix
+      POSTGRES_PASSWORD: matrix_dev
+      POSTGRES_DB: matrix
+    ports:
+      - '5433:5432'
+    volumes:
+      - matrix_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U matrix -d matrix']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  matrix_pgdata:
