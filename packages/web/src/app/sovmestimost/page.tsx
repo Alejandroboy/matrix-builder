@@ -1,4 +1,4 @@
-import Calculator from '@/components/calculator';
+import Calculator from '@/components/Calculator';
 
 export const metadata = {
   title: 'Матрица судьбы: рассчитать совместимость по датам рождения',
