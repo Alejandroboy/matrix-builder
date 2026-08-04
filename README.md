@@ -6,16 +6,16 @@
   отчёта совместимости + snapshot-тест; render-pdf ГОТОВ (pdfkit,
   кириллица через встраиваемый TTF) + дымовой тест с проверкой
   текстового слоя через pdftotext.
-- content: арканы 3, 11, 13 полностью (карточка + 5 блоков прозы).
-  content/drafts/ — staging-зона карточек, ждущих прозы (загрузчик
-  видит только content/arcana/).
+- content: арканы 3, 4, 5, 6, 11, 13 полностью (карточка + 5 блоков
+  прозы) — 6 из 22. content/drafts/ — staging-зона карточек, ждущих
+  прозы (загрузчик видит только content/arcana/); сейчас пуста.
   pair-rules.json: темпераменты всех 22 (DRAFT), 15 правил-каркасов [DRAFT].
 - web: ИНТЕГРИРОВАН (адаптация твоего форка Неустойки). Платёжное ядро
   (yookassa.ts, полинг статуса, download-token, webhook, prisma.ts) —
   БЕЗ ИЗМЕНЕНИЙ. Адаптировано: schema.prisma (productType, input, Lead),
   order.ts (цены 290/390), validation.ts (через движок), orders route
   (+проверка покрытия контентом, 409 -> лид-форма), leads route (новый),
-  download route (PDF вместо docx), calculator.tsx (заменён; старый
+  download route (PDF вместо docx), Calculator.tsx (заменён; старый
   сохранён как Calculator.neustoyka.bak.txt), страницы /, /sovmestimost,
   /arkan/[n] (SSG из контентных JSON, индексируются только готовые арканы).
   Typecheck чистый. Шрифты: assets/fonts/PT Serif (OFL, из google/fonts).
