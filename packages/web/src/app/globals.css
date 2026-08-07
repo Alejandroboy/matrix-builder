@@ -192,3 +192,192 @@ input.invalid:focus { outline-color: var(--stamp); }
 .check input[type='checkbox'] {
   cursor: pointer;
 }
+/* ============================================================
+   Редизайн: тёмные полосы, лендинг, «самоцветная» октаграмма
+   ============================================================ */
+
+:root {
+  /* Киноварь на тёмном фоне: исходный --stamp на #121A2B не читается */
+  --stamp-on-dark: #E2725B;
+
+  /* Палитра узлов октаграммы. Пары: светлый фон / тёмный фон */
+  --node-day: #2E5C8A;        --node-day-rev: #6FA0D6;
+  --node-month: #2F7A5E;      --node-month-rev: #5FC79A;
+  --node-year: #B4802A;       --node-year-rev: #E0A94A;
+  --node-base: #9C4A2E;       --node-base-rev: #D07C55;
+  --node-heart: #8C2F26;      --node-heart-rev: #E2725B;
+  --node-money: #2F7A4A;      --node-money-rev: #63C98A;
+}
+
+/* Тёмная полоса во всю ширину: герой, баннеры, шапка страницы аркана */
+.band-dark {
+  background: var(--ink);
+  color: var(--paper);
+}
+.band-dark h1, .band-dark h2, .band-dark h3 { color: var(--paper); }
+.band-dark a { color: var(--stamp-on-dark); }
+.band-dark .muted { color: rgba(251, 250, 247, 0.72); }
+
+.section { padding: 88px 0; }
+@media (max-width: 720px) { .section { padding: 56px 0; } }
+
+.eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--stamp);
+  margin-bottom: 16px;
+}
+.band-dark .eyebrow { color: var(--stamp-on-dark); }
+
+.display {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(38px, 5.4vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px;
+}
+.lead { font-size: 19px; line-height: 1.6; max-width: 46ch; }
+
+/* Кнопка на тёмном: инверсия основной */
+button.on-dark { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+button.on-dark:hover { background: #fff; }
+button.ghost-on-dark {
+  background: transparent;
+  color: var(--paper);
+  border-color: rgba(251, 250, 247, 0.4);
+}
+button.ghost-on-dark:hover { border-color: var(--paper); }
+
+/* Шапка */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(251, 250, 247, 0.92);
+  backdrop-filter: saturate(140%) blur(6px);
+  border-bottom: 1px solid var(--rule);
+}
+.logo-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--stamp);
+  border-radius: 2px;
+  color: var(--stamp);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  transform: rotate(-3deg);
+  flex: none;
+}
+.nav-pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.nav-pill:hover { background: var(--paper-raised); color: var(--ink); text-decoration: none; }
+.nav-pill[aria-current='page'] { background: var(--paper-raised); color: var(--ink); border: 1px solid var(--rule); }
+
+/* Ключевые слова аркана */
+.chip {
+  display: inline-block;
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 250, 247, 0.4);
+  font-size: 13px;
+  color: var(--paper);
+}
+
+/* Шаги «как это работает» */
+.step-num {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--stamp);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+/* Цитата из разбора */
+.pull-quote {
+  border-left: 3px solid var(--stamp);
+  padding-left: 16px;
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+/* Тарифы */
+.price-card { position: relative; }
+.price-card.featured { border-color: var(--ink); }
+.price-tag {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.price-badge {
+  position: absolute;
+  top: -14px;
+  right: 20px;
+  background: var(--paper-raised);
+  border: 2px solid var(--stamp);
+  color: var(--stamp);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 2px;
+  transform: rotate(-2deg);
+}
+.price-list { list-style: none; padding: 0; margin: 0 0 20px; }
+.price-list li { padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 15px; }
+
+/* Аккордеоны на нативном details — без JS */
+details.acc { border-bottom: 1px solid var(--rule); }
+details.acc summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+}
+details.acc summary::-webkit-details-marker { display: none; }
+details.acc summary::after { content: '+'; color: var(--stamp); font-size: 22px; line-height: 1; }
+details.acc[open] summary::after { content: '−'; }
+details.acc > div { padding-bottom: 18px; }
+
+/* Карточка-аккордеон (расшифровка матрицы) */
+details.acc-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+details.acc-card summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+details.acc-card summary::-webkit-details-marker { display: none; }
+details.acc-card > div { padding: 0 20px 20px; }

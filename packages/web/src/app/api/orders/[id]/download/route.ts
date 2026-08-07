@@ -5,8 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as path from 'path';
 import { prisma } from '@/lib/prisma';
 import { verifyDownloadToken } from '@/lib/download-token';
-import { computeCompatibility } from '@matrix/engine';
-import { compileCompatibilityReport, renderCompatibilityPdf } from '@matrix/docgen';
+import { computeCompatibility, computePersonalMatrix } from '@matrix/engine';
+import {
+  compileCompatibilityReport,
+  compilePersonalReport,
+  renderReportPdf,
+  type ReportSpec,
+} from '@matrix/docgen';
 import { getContent } from '@/lib/content';
 import type { OrderInput } from '@/lib/order';
 
@@ -36,28 +41,36 @@ export async function GET(
   }
 
   const input = order.input as unknown as OrderInput;
-  if (input.productType !== 'compatibility') {
-    // Личный отчёт — следующий компилятор; до него personal не продаётся (см. Calculator)
-    return NextResponse.json({ error: 'Тип пока не поддержан' }, { status: 501 });
-  }
-
   const { content, pairRules } = getContent();
-  const spec = compileCompatibilityReport({
-    matrix: computeCompatibility(input.birthDateA, input.birthDateB!),
-    content,
-    pairRules,
-    names: { a: input.nameA, b: input.nameB! },
-    orderId: order.id,
-    generatedAt: new Date().toISOString(),
-  });
+  const generatedAt = new Date().toISOString();
 
-  const stream = renderCompatibilityPdf(spec, { fonts: FONTS });
+  const spec: ReportSpec =
+    input.productType === 'compatibility'
+      ? compileCompatibilityReport({
+          matrix: computeCompatibility(input.birthDateA, input.birthDateB!),
+          content,
+          pairRules,
+          names: { a: input.nameA, b: input.nameB! },
+          orderId: order.id,
+          generatedAt,
+        })
+      : compilePersonalReport({
+          matrix: computePersonalMatrix(input.birthDateA),
+          content,
+          name: input.nameA,
+          orderId: order.id,
+          generatedAt,
+        });
+
+  const stream = renderReportPdf(spec, { fonts: FONTS });
   const buf = await streamToBuffer(stream);
 
   return new NextResponse(new Uint8Array(buf), {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="sovmestimost-${id}.pdf"`,
+      'Content-Disposition': `attachment; filename="${
+        input.productType === 'compatibility' ? 'sovmestimost' : 'matrica'
+      }-${id}.pdf"`,
       'Cache-Control': 'no-store',
     },
   });
