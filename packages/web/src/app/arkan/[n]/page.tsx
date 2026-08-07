@@ -8,7 +8,6 @@ import { getContent } from '@/lib/content';
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  // Индексируются только арканы с готовым контентом
   return [...getContent().content.keys()].map((a) => ({ n: String(a) }));
 }
 
@@ -31,36 +30,96 @@ export default async function ArkanPage({ params }: { params: Promise<{ n: strin
   const { card, prose } = item;
 
   return (
-    <article className="wrap stack" style={{ padding: '48px 20px' }}>
-      <h1>
-        {num} аркан «{card.name}» в матрице судьбы
-      </h1>
-      <Prose text={prose.blocks.portraitFull} />
+    <>
+      <section className="band-dark">
+        <div className="wrap" style={{ padding: '64px 20px 56px' }}>
+          <div className="eyebrow">Аркан {num}</div>
+          <h1 className="display" style={{ fontSize: 'clamp(34px, 4.6vw, 56px)' }}>
+            {card.name}
+          </h1>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 20 }}>
+            {card.keywords.map((k) => (
+              <span key={k} className="chip">
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <h2>{card.name} в отношениях</h2>
-      <Prose text={prose.blocks.asPartner} />
-      <Prose text={prose.blocks.needsFromPartner} />
+      <div
+        className="wrap"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(320px, 1.6fr) minmax(260px, 1fr)',
+          gap: 40,
+          alignItems: 'start',
+          padding: '56px 20px 24px',
+        }}
+      >
+        <article>
+          <h2>Портрет</h2>
+          <Prose text={prose.blocks.portraitFull} />
 
-      <h2>Типичный конфликт</h2>
-      <Prose text={prose.blocks.conflictPattern} />
+          <h2>В отношениях</h2>
+          <Prose text={prose.blocks.asPartner} />
+          <Prose text={prose.blocks.needsFromPartner} />
 
-      <h2>{num} аркан в позициях матрицы</h2>
-      <h3>В центре</h3>
-      <p>{card.positionNotes.center}</p>
-      <h3>Под сердцем</h3>
-      <p>{card.positionNotes.heart}</p>
-      <h3>На линии денег</h3>
-      <p>{card.positionNotes.money}</p>
+          <h2>Типичный конфликт</h2>
+          <Prose text={prose.blocks.conflictPattern} />
+        </article>
 
-      <p>
-        <Link href="/">Рассчитайте свою матрицу</Link> — мгновенно и бесплатно, или
-        посмотрите <Link href="/sovmestimost">совместимость с партнёром</Link>.
-      </p>
-      <p style={{ fontSize: 13, color: '#8a8a8a' }}>
-        Матрица судьбы — арифметический расчёт по дате рождения и интерпретация для
-        саморефлексии, а не гадание и не предсказание будущего.
-      </p>
-    </article>
+        <aside className="stack" style={{ position: 'sticky', top: 84 }}>
+          <div className="card">
+            <h3>Сильные стороны</h3>
+            <ul style={{ paddingLeft: 18, margin: 0 }}>
+              {card.strengths.map((s) => (
+                <li key={s} style={{ marginBottom: 8, fontSize: 15 }}>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="card">
+            <h3>Тени</h3>
+            <ul style={{ paddingLeft: 18, margin: 0 }}>
+              {card.shadows.map((s) => (
+                <li key={s} style={{ marginBottom: 8, fontSize: 15 }}>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="card" style={{ borderColor: 'var(--ink)' }}>
+            <h3>Аркан в позициях</h3>
+            <p className="muted" style={{ marginBottom: 4 }}>В центре</p>
+            <p style={{ fontSize: 15 }}>{card.positionNotes.center}</p>
+            <p className="muted" style={{ marginBottom: 4 }}>Под сердцем</p>
+            <p style={{ fontSize: 15 }}>{card.positionNotes.heart}</p>
+            <p className="muted" style={{ marginBottom: 4 }}>На линии денег</p>
+            <p style={{ fontSize: 15, marginBottom: 0 }}>{card.positionNotes.money}</p>
+          </div>
+        </aside>
+      </div>
+
+      <section className="wrap" style={{ paddingBottom: 64 }}>
+        <div
+          className="card"
+          style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}
+        >
+          <p style={{ margin: 0, flex: '1 1 300px' }}>
+            Узнайте, в каких позициях этот аркан стоит именно у вас, — расчёт бесплатный и
+            мгновенный. Все энергии — в <Link href="/arkan">списке 22 арканов</Link>.
+          </p>
+          <Link href="/matrica">
+            <button>Рассчитать мою матрицу</button>
+          </Link>
+          <Link href="/sovmestimost">
+            <button className="ghost">Совместимость пары</button>
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }
 

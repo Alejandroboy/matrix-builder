@@ -1,9 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Пакеты монорепы отдают исходный TypeScript — Next компилирует их сам.
-  // Это убирает шаг сборки пакетов и делает правку движка мгновенно видимой в dev.
-  transpilePackages: ['@penalties-claim/engine', '@penalties-claim/docgen'],
+  // pdfkit держим вне бандла: он читает свои файлы с диска (метрики шрифтов
+  // в data/, кодировки), а бандлер их не копирует — иначе ENOENT на
+  // Helvetica.afm при первом же создании документа.
+  serverExternalPackages: ['pdfkit'],
+
+  // Пакеты монорепы подключаются собранными (main: dist/index.js),
+  // поэтому transpilePackages не нужен: сборка идёт через `yarn build:libs`.
 };
 
 export default nextConfig;

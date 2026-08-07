@@ -11,7 +11,7 @@ export async function GET(
   const { id } = await params;
   const order = await prisma.order.findUnique({
     where: { id },
-    select: { id: true, status: true, yookassaPaymentId: true },
+    select: { id: true, status: true, yookassaPaymentId: true, productType: true },
   });
   if (!order) return NextResponse.json({ error: 'Заказ не найден' }, { status: 404 });
 
@@ -53,7 +53,7 @@ export async function GET(
       ? `/api/orders/${id}/download?t=${issueDownloadToken(id, process.env.DOWNLOAD_SECRET!)}`
       : null;
 
-  return NextResponse.json({ status, downloadUrl }, {
+  return NextResponse.json({ status, downloadUrl, productType: order.productType }, {
     headers: { 'Cache-Control': 'no-store' },
   });
 }

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { execFileSync } from 'child_process';
-import { toArcana, CompatibilityMatrix } from '@matrix/engine';
+import { toArcana, computeCompatibility, CompatibilityMatrix } from '@matrix/engine';
 import { loadAllContent } from '../content-loader';
 import { compileCompatibilityReport, PairRulesFile } from '../report';
 import { renderCompatibilityPdf } from '../render-pdf';
@@ -17,18 +17,20 @@ const FONTS = {
   bold: '/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf',
 };
 
+/**
+ * Фикстура строится реальным расчётом, а не руками: так она не устаревает
+ * при добавлении позиций в PersonalMatrix (история с углами квадрата).
+ * Даты подобраны так, чтобы нужные компилятору арканы были покрыты контентом.
+ */
 function fixtureMatrix(): CompatibilityMatrix {
-  const p = (n: number) => toArcana(n);
-  const positionsA = {
-    personality: p(11), spirituality: p(11), destiny: p(11), karmicBase: p(11),
-    center: p(11), relationsEntry: p(11), moneyEntry: p(11), balance: p(11),
-    heart: p(11), money: p(11),
-  };
-  const positionsB = { ...positionsA, center: p(13), heart: p(13) };
+  const cm = computeCompatibility('1980-01-10', '1980-01-28');
   return {
-    a: { birthDate: '1990-01-01', positions: positionsA },
-    b: { birthDate: '1992-02-02', positions: positionsB },
-    joint: { coupleCharacter: p(13), coupleHeart: p(11), coupleMoney: p(13) },
+    ...cm,
+    joint: {
+      coupleCharacter: toArcana(13),
+      coupleHeart: toArcana(11),
+      coupleMoney: toArcana(13),
+    },
   };
 }
 
