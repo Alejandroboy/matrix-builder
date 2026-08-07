@@ -26,11 +26,23 @@ describe('compilePersonalReport', () => {
   });
 
   test('fails fast when an arcana has no content', () => {
-    const matrix = computePersonalMatrix('1990-05-14'); // heart = 17, контента нет
+    // Непокрытый аркан ищем динамически: тест не должен ломаться от
+    // пополнения контента (ломался дважды — на 7 и на 16/17).
+    const { toArcana } = require('@matrix/engine');
+    const uncovered = Array.from({ length: 22 }, (_, i) => toArcana(i + 1)).find(
+      (a: number) => !content.has(a as never),
+    );
+    if (!uncovered) return; // все 22 покрыты — проверять нечего
+
+    const matrix = computePersonalMatrix('1980-01-10');
+    const broken = {
+      ...matrix,
+      positions: { ...matrix.positions, center: uncovered },
+    };
     expect(() =>
       compilePersonalReport({
-        matrix, content, name: 'Х', orderId: 'x', generatedAt: 'x',
+        matrix: broken, content, name: 'Х', orderId: 'x', generatedAt: 'x',
       }),
-    ).toThrow(/No content for arcana/);
+    ).toThrow(new RegExp(`No content for arcana ${uncovered}`));
   });
 });

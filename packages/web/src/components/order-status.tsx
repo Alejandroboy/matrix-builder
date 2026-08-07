@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 type Status = 'created' | 'paid' | 'canceled';
+type ProductType = 'personal' | 'compatibility';
 
 /**
  * Страница возврата с оплаты. Вебхук от ЮKassa может прийти на секунду-две
@@ -12,6 +13,7 @@ type Status = 'created' | 'paid' | 'canceled';
 export default function OrderStatus({ orderId }: { orderId: string }) {
   const [status, setStatus] = useState<Status | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [productType, setProductType] = useState<ProductType | null>(null);
   const [gaveUp, setGaveUp] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
         if (cancelled) return;
         setStatus(data.status);
         setDownloadUrl(data.downloadUrl);
+        setProductType(data.productType ?? null);
         if (data.status === 'paid' || data.status === 'canceled') return;
       } catch {
         /* сеть моргнула — просто пробуем ещё раз */
@@ -40,12 +43,20 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
   }, [orderId]);
 
   if (status === 'paid' && downloadUrl) {
+    const isPair = productType === 'compatibility';
     return (
       <div className="card stack">
         <span className="stamp">Оплачено</span>
-        <h1>Претензия готова</h1>
-        <p>Файл в формате Word. Ссылка действует 7 дней — сохраните документ себе.</p>
-        <div><a href={downloadUrl}><button>Скачать претензию (.docx)</button></a></div>
+        <h1>{isPair ? 'Разбор совместимости готов' : 'Разбор вашей матрицы готов'}</h1>
+        <p>
+          Файл в формате PDF. Ссылка действует 7 дней — сохраните документ себе или
+          распечатайте.
+        </p>
+        <div>
+          <a href={downloadUrl}>
+            <button>Скачать разбор (.pdf)</button>
+          </a>
+        </div>
       </div>
     );
   }
@@ -54,7 +65,7 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
     return (
       <div className="card stack">
         <h1>Платёж отменён</h1>
-        <p>Деньги не списаны. Вернитесь к расчёту и попробуйте оформить документ ещё раз.</p>
+        <p>Деньги не списаны. Вернитесь к расчёту и оформите разбор ещё раз.</p>
         <div><a href="/"><button className="ghost">К расчёту</button></a></div>
       </div>
     );

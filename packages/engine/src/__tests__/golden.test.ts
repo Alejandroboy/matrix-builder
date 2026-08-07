@@ -10,6 +10,13 @@ import { computePersonalMatrix } from '../matrix';
  *
  * Источник схемы: публичный вывод формул tvoyamatritsa.ru («Деньги в матрице
  * судьбы»), кейс REF ниже — дословно их разобранный пример 21.11.1986.
+ *
+ * ⚠️ Промежуточные точки осей и диагоналей (axisDay/axisMonth/diag*) добавлены
+ * по ТОМУ ЖЕ правилу «сумма соседних», что и углы квадрата (углы численно
+ * сверены со скринами конкурента 2026-08-04). Сюда же относятся вторые точки
+ * направлений (*Outer). Сами промежуточные значения численно НЕ сверены —
+ * при следующем заходе на чужой калькулятор проверить пару точек на
+ * горизонтали и снять эту пометку.
  * Остальные эталоны посчитаны вручную по этой схеме 2026-08-03.
  * Кросс-чек рекомендован на: matrica-sudby.ru, human-design.space (см. ⚠️ в README).
  */
@@ -18,7 +25,16 @@ const GOLDEN: Array<{
   note: string;
   expected: {
     personality: number; spirituality: number; destiny: number; karmicBase: number;
-    center: number; relationsEntry: number; moneyEntry: number; balance: number;
+    center: number; cornerDayMonth: number; cornerMonthYear: number;
+    cornerYearBase: number; cornerBaseDay: number;
+    axisDay: number; axisMonth: number;
+    diagTopLeft: number; diagTopRight: number;
+    diagBottomRight: number; diagBottomLeft: number;
+    axisDayOuter: number; axisMonthOuter: number;
+    axisYearOuter: number; axisBaseOuter: number;
+    diagTopLeftOuter: number; diagTopRightOuter: number;
+    diagBottomRightOuter: number; diagBottomLeftOuter: number;
+    relationsEntry: number; moneyEntry: number; balance: number;
     heart: number; money: number;
   };
 }> = [
@@ -29,7 +45,12 @@ const GOLDEN: Array<{
     // d1=11+13=24->6, c1=6+13=19, x=6+19=25->7, x1=6+7=13, x2=7+19=26->8
     expected: {
       personality: 21, spirituality: 11, destiny: 6, karmicBase: 11,
-      center: 13, relationsEntry: 6, moneyEntry: 19, balance: 7,
+      center: 13,
+      cornerDayMonth: 5, cornerMonthYear: 17, cornerYearBase: 17, cornerBaseDay: 5,
+      axisDay: 7, axisMonth: 6,
+      diagTopLeft: 18, diagTopRight: 3, diagBottomRight: 3, diagBottomLeft: 18,
+      axisDayOuter: 10, axisMonthOuter: 17, axisYearOuter: 7, axisBaseOuter: 17,
+      diagTopLeftOuter: 5, diagTopRightOuter: 20, diagBottomRightOuter: 20, diagBottomLeftOuter: 5, relationsEntry: 6, moneyEntry: 19, balance: 7,
       heart: 13, money: 8,
     },
   },
@@ -40,7 +61,12 @@ const GOLDEN: Array<{
     // d1=11+13=24->6, c1=19+13=32->5, x=6+5=11, x1=6+11=17, x2=11+5=16
     expected: {
       personality: 14, spirituality: 5, destiny: 19, karmicBase: 11,
-      center: 13, relationsEntry: 6, moneyEntry: 5, balance: 11,
+      center: 13,
+      cornerDayMonth: 19, cornerMonthYear: 6, cornerYearBase: 3, cornerBaseDay: 7,
+      axisDay: 9, axisMonth: 18,
+      diagTopLeft: 5, diagTopRight: 19, diagBottomRight: 16, diagBottomLeft: 20,
+      axisDayOuter: 5, axisMonthOuter: 5, axisYearOuter: 6, axisBaseOuter: 17,
+      diagTopLeftOuter: 6, diagTopRightOuter: 7, diagBottomRightOuter: 19, diagBottomLeftOuter: 9, relationsEntry: 6, moneyEntry: 5, balance: 11,
       heart: 17, money: 16,
     },
   },
@@ -51,7 +77,12 @@ const GOLDEN: Array<{
     // d1=18+9=27->9, c1=2+9=11, x=9+11=20, x1=9+20=29->11, x2=20+11=31->4
     expected: {
       personality: 4, spirituality: 12, destiny: 2, karmicBase: 18,
-      center: 9, relationsEntry: 9, moneyEntry: 11, balance: 20,
+      center: 9,
+      cornerDayMonth: 16, cornerMonthYear: 14, cornerYearBase: 20, cornerBaseDay: 22,
+      axisDay: 13, axisMonth: 21,
+      diagTopLeft: 7, diagTopRight: 5, diagBottomRight: 11, diagBottomLeft: 4,
+      axisDayOuter: 17, axisMonthOuter: 6, axisYearOuter: 13, axisBaseOuter: 9,
+      diagTopLeftOuter: 5, diagTopRightOuter: 19, diagBottomRightOuter: 4, diagBottomLeftOuter: 8, relationsEntry: 9, moneyEntry: 11, balance: 20,
       heart: 11, money: 4,
     },
   },
@@ -62,7 +93,12 @@ const GOLDEN: Array<{
     // d1=5+10=15, c1=8+10=18, x=15+18=33->6, x1=15+6=21, x2=6+18=24->6
     expected: {
       personality: 22, spirituality: 11, destiny: 8, karmicBase: 5,
-      center: 10, relationsEntry: 15, moneyEntry: 18, balance: 6,
+      center: 10,
+      cornerDayMonth: 6, cornerMonthYear: 19, cornerYearBase: 13, cornerBaseDay: 9,
+      axisDay: 5, axisMonth: 21,
+      diagTopLeft: 16, diagTopRight: 11, diagBottomRight: 5, diagBottomLeft: 19,
+      axisDayOuter: 9, axisMonthOuter: 5, axisYearOuter: 8, axisBaseOuter: 20,
+      diagTopLeftOuter: 22, diagTopRightOuter: 3, diagBottomRightOuter: 18, diagBottomLeftOuter: 10, relationsEntry: 15, moneyEntry: 18, balance: 6,
       heart: 21, money: 6,
     },
   },
@@ -73,7 +109,12 @@ const GOLDEN: Array<{
     // d1=3+6=9, c1=10+6=16, x=9+16=25->7, x1=9+7=16, x2=7+16=23->5
     expected: {
       personality: 11, spirituality: 9, destiny: 10, karmicBase: 3,
-      center: 6, relationsEntry: 9, moneyEntry: 16, balance: 7,
+      center: 6,
+      cornerDayMonth: 20, cornerMonthYear: 19, cornerYearBase: 13, cornerBaseDay: 14,
+      axisDay: 17, axisMonth: 15,
+      diagTopLeft: 8, diagTopRight: 7, diagBottomRight: 19, diagBottomLeft: 20,
+      axisDayOuter: 10, axisMonthOuter: 6, axisYearOuter: 8, axisBaseOuter: 12,
+      diagTopLeftOuter: 10, diagTopRightOuter: 8, diagBottomRightOuter: 5, diagBottomLeftOuter: 7, relationsEntry: 9, moneyEntry: 16, balance: 7,
       heart: 16, money: 5,
     },
   },

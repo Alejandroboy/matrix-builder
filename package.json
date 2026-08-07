@@ -1,9 +1,18 @@
 {
   "name": "matrix",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "build": "yarn workspace @matrix/engine build && yarn workspace @matrix/docgen build",
-    "test": "yarn workspace @matrix/engine test && yarn workspace @matrix/docgen test"
+    "build:libs": "yarn workspace @matrix/engine build && yarn workspace @matrix/docgen build",
+    "dev": "yarn build:libs && yarn workspace @matrix/web dev",
+    "build": "yarn build:libs && yarn workspace @matrix/web build",
+    "start": "yarn workspace @matrix/web start",
+    "test": "yarn workspace @matrix/engine test && yarn workspace @matrix/docgen test",
+    "db:up": "cd packages/web && docker compose up -d",
+    "db:down": "cd packages/web && docker compose down",
+    "db:migrate": "cd packages/web && npx prisma migrate dev && npx prisma generate",
+    "clean": "rm -rf packages/*/dist packages/web/.next"
   }
 }

@@ -1,6 +1,6 @@
 import { Arcana, PersonalMatrix } from '@matrix/engine';
 import { ArcanaContentMap } from './content-schema';
-import { DISCLAIMER, ReportSection, ReportSpec } from './report';
+import { DISCLAIMER, formatRu, ReportSection, ReportSpec } from './report';
 
 export interface CompilePersonalInput {
   matrix: PersonalMatrix;
@@ -37,9 +37,10 @@ export function compilePersonalReport(input: CompilePersonalInput): ReportSpec {
       kind: 'cover',
       title: 'Разбор вашей матрицы судьбы',
       namesLine: name,
-      datesLine: matrix.birthDate,
+      datesLine: formatRu(matrix.birthDate),
     },
-    { kind: 'matrixVisual', matrix: 'a' },
+    // caption не нужен: имя уже на обложке, дублировать его под схемой — шум
+    { kind: 'matrixVisual', positions: p },
 
     {
       kind: 'prose',

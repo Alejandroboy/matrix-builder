@@ -1,4 +1,4 @@
-import { Arcana, CompatibilityMatrix } from '@matrix/engine';
+import { Arcana, CompatibilityMatrix, PersonalMatrix } from '@matrix/engine';
 import { ArcanaContentMap } from './content-schema';
 
 /* ------------------------------- Правила пар ------------------------------ */
@@ -8,8 +8,8 @@ export type Temperament = 'leader' | 'analyst' | 'dreamer' | 'stabilizer' | 'reb
 export interface PairRule {
   id: string;
   match: [Temperament, Temperament];
-  synthesis: string; // 150–250 слов о динамике пары
-  advice: string; // 100–150 слов
+  synthesis: string; // ~130–200 слов о динамике пары (плотность важнее объёма)
+  advice: string; // ~60–90 слов
 }
 
 export interface PairRulesFile {
@@ -35,14 +35,30 @@ export function temperamentOf(arcana: Arcana, file: PairRulesFile): Temperament 
 
 export type ReportSection =
   | { kind: 'cover'; title: string; namesLine: string; datesLine: string }
-  | { kind: 'matrixVisual'; matrix: 'a' | 'b' | 'joint' }
+  // Схема-октаграмма. Позиции передаются целиком: рендерер не знает,
+  // откуда они взялись, и просто рисует то, что дали.
+  | {
+  kind: 'matrixVisual';
+  positions: PersonalMatrix['positions'];
+  caption?: string;
+}
   | { kind: 'prose'; heading: string; body: string }
   | { kind: 'pairSynthesis'; heading: string; body: string; advice: string }
   | { kind: 'disclaimer'; body: string };
 
-export interface CompatibilityReportSpec {
+/** Общая спецификация отчёта: рендерер работает с ней, не зная типа продукта. */
+export interface ReportSpec {
   meta: { generatedAt: string; orderId: string };
   sections: ReportSection[];
+}
+
+/** Историческое имя парного отчёта; структура общая. */
+export type CompatibilityReportSpec = ReportSpec;
+
+/** ISO 'YYYY-MM-DD' -> '25.05.1987': в документе дата должна выглядеть по-русски. */
+export function formatRu(iso: string): string {
+  const [y, m, d] = iso.split('-');
+  return `${d}.${m}.${y}`;
 }
 
 export const DISCLAIMER =
@@ -87,9 +103,10 @@ export function compileCompatibilityReport(input: CompileInput): CompatibilityRe
       kind: 'cover',
       title: 'Совместимость по матрице судьбы',
       namesLine: `${names.a} и ${names.b}`,
-      datesLine: `${matrix.a.birthDate} · ${matrix.b.birthDate}`,
+      datesLine: `${formatRu(matrix.a.birthDate)} · ${formatRu(matrix.b.birthDate)}`,
     },
-    { kind: 'matrixVisual', matrix: 'joint' },
+    { kind: 'matrixVisual', positions: matrix.a.positions, caption: names.a },
+    { kind: 'matrixVisual', positions: matrix.b.positions, caption: names.b },
     {
       kind: 'prose',
       heading: 'Тема вашего союза',

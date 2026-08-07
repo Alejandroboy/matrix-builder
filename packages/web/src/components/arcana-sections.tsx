@@ -44,7 +44,6 @@ const SECTIONS: Array<{
 ];
 
 export default function ArcanaSections({ matrix }: { matrix: PersonalMatrix }) {
-  const [open, setOpen] = useState<string | null>('center');
   const data = useArcanaData([
     matrix.positions.center,
     matrix.positions.heart,
@@ -56,73 +55,45 @@ export default function ArcanaSections({ matrix }: { matrix: PersonalMatrix }) {
       <h2>Расшифровка вашей матрицы</h2>
 
       <div>
-        {SECTIONS.map((s) => {
+        {SECTIONS.map((s, i) => {
           const arcana = matrix.positions[s.position];
           const item = data.get(arcana);
-          const isOpen = open === s.position;
           return (
-            <article
-              key={s.position}
-              className="card"
-              style={{ marginBottom: 8, padding: 0, overflow: 'hidden' }}
-            >
-              <button
-                type="button"
-                className="ghost"
-                onClick={() => setOpen(isOpen ? null : s.position)}
-                aria-expanded={isOpen}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  borderRadius: 0,
-                  height: 'auto',
-                  padding: '16px 20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 16,
-                  textAlign: 'left',
-                }}
-              >
+            <details key={s.position} className="acc-card" open={i === 0}>
+              <summary>
                 <span>
                   <strong style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>{s.title}</strong>
-                  <span className="muted" style={{ display: 'block' }}>
-                    {s.subtitle}
-                  </span>
+                  <span className="muted" style={{ display: 'block' }}>{s.subtitle}</span>
                 </span>
                 <span
                   className="num"
                   style={{ fontFamily: 'var(--serif)', fontWeight: 700, whiteSpace: 'nowrap' }}
                 >
-                  {arcana} {item ? `· ${item.name}` : ''}
+                  {arcana}
+                  {item ? ` · ${item.name}` : ''}
                 </span>
-              </button>
-
-              {isOpen && (
-                <div style={{ padding: '0 20px 20px' }}>
-                  {item ? (
-                    <>
-                      {item.positionNotes?.[s.note] && <p>{item.positionNotes[s.note]}</p>}
-                      <p>{firstParagraph(item.portraitShort)}</p>
-                      <p>
-                        <Link href={`/arkan/${arcana}`}>
-                          Полный разбор аркана {arcana} — {item.name}
-                        </Link>
-                      </p>
-                    </>
-                  ) : (
-                    <p className="muted">
-                      Разбор аркана {arcana} ещё пишется — мы дописываем расшифровки по одной.
-                      Схема и расчёт уже верные.
+              </summary>
+              <div>
+                {item ? (
+                  <>
+                    {item.positionNotes?.[s.note] && <p>{item.positionNotes[s.note]}</p>}
+                    <p>{firstParagraph(item.portraitShort)}</p>
+                    <p style={{ marginBottom: 0 }}>
+                      <Link href={`/arkan/${arcana}`}>
+                        Полный разбор аркана {arcana} — {item.name} →
+                      </Link>
                     </p>
-                  )}
-                </div>
-              )}
-            </article>
+                  </>
+                ) : (
+                  <p className="muted" style={{ marginBottom: 0 }}>
+                    Разбор аркана {arcana} ещё пишется. Схема и расчёт уже верные.
+                  </p>
+                )}
+              </div>
+            </details>
           );
         })}
       </div>
-
     </section>
   );
 }
