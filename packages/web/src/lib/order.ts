@@ -9,6 +9,7 @@ export type ProductType = keyof typeof PRICE_KOPECKS;
 /** Полный вход заказа. Для personal поля B отсутствуют. */
 export interface OrderInput {
   productType: ProductType;
+  email: string;
   birthDateA: string; // 'YYYY-MM-DD'
   nameA: string;
   birthDateB?: string;

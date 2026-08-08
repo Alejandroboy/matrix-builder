@@ -15,7 +15,7 @@ enum OrderStatus {
 }
 
 enum ProductType {
-  personal      // личный PDF-разбор
+  personal // личный PDF-разбор
   compatibility // PDF совместимости пары
 }
 
@@ -23,28 +23,46 @@ model Order {
   id          String      @id @default(cuid())
   status      OrderStatus @default(created)
   productType ProductType
-  // Полный вход: { birthDateA, nameA, birthDateB?, nameB? }. JSON осознанно:
-  // PDF генерируется на лету из этих данных при каждом скачивании (паттерн Неустойки).
-  input       Json
+  // Вход: { birthDateA, nameA, birthDateB?, nameB? }. Это персональные данные:
+  // дата рождения + имя. Храним ровно столько, сколько нужно для повторной
+  // генерации PDF по ссылке (7 дней), дальше обнуляется — см. purgedAt и
+  // /api/cron/purge. После обнуления заказ остаётся как факт оплаты (для
+  // бухгалтерии и 54-ФЗ), но без ПДн.
+  input       Json?
   amount      Int // копейки
+
+  // Момент согласия на обработку ПДн. Без него заказ не создаётся:
+  // согласие фиксируется до записи данных, а не после.
+  consentAt   DateTime
+  // Почта покупателя: единственный способ получить документ, если вкладка закрыта.
+  // Хранится дольше input — по ней восстанавливаем доступ и шлём чек.
+  email       String?
+  // Защита от повторной отправки: письмо уходит один раз, кто бы ни обнаружил
+  // оплату первым — вебхук или опрос статуса.
+  emailSentAt DateTime?
 
   yookassaPaymentId String?   @unique
   createdAt         DateTime  @default(now())
   paidAt            DateTime?
+  // Когда input обнулён политикой хранения
+  purgedAt          DateTime?
 
   @@index([status, createdAt])
+  @@index([purgedAt, paidAt])
 }
 
 // Лид переходного периода: пара попала на аркан без контента —
 // вместо продажи пустоты собираем email и шлём письмо, когда контент готов.
 model Lead {
-  id             String   @id @default(cuid())
-  email          String
-  productType    ProductType
-  input          Json
-  missingArcana  Int[]
-  createdAt      DateTime @default(now())
-  notifiedAt     DateTime?
+  id            String      @id @default(cuid())
+  email         String
+  productType   ProductType
+  input         Json?
+  missingArcana Int[]
+  consentAt     DateTime
+  createdAt     DateTime    @default(now())
+  notifiedAt    DateTime?
+  purgedAt      DateTime?
 
   @@index([notifiedAt, createdAt])
 }

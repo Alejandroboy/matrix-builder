@@ -17,6 +17,8 @@ import { arcanaName } from '@/lib/arcana-names';
 
 type Tab = 'personal' | 'compatibility';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface ArcanaTeaser {
   arcana: number;
   name: string;
@@ -44,6 +46,8 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
   const [leadMode, setLeadMode] = useState<{ missingArcana: number[] } | null>(null);
   const [leadEmail, setLeadEmail] = useState('');
   const [leadSent, setLeadSent] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [email, setEmail] = useState('');
 
   const personal = useMemo(() => tryMatrix(birthA), [birthA]);
   const partner = useMemo(() => tryMatrix(birthB), [birthB]);
@@ -67,6 +71,8 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          consent: true,
+          email,
           productType: tab,
           birthDateA: birthA,
           nameA,
@@ -97,6 +103,7 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          consent: true,
           email: leadEmail,
           productType: tab,
           birthDateA: birthA,
@@ -210,8 +217,21 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
       )}
 
       {!leadMode && ready && (
-        <div>
-          <button disabled={busy} onClick={buy}>
+        <div className="stack" style={{ gap: 12 }}>
+          <label>
+            <span className="label-text">Почта для получения PDF</span>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <span className="muted" style={{ display: 'block', marginTop: 4 }}>
+              Пришлём документ и чек. Рассылок не будет.
+            </span>
+          </label>
+          <ConsentCheckbox checked={consent} onChange={setConsent} />
+          <button disabled={busy || !consent || !EMAIL_RE.test(email)} onClick={buy}>
             {busy
               ? 'Готовим оплату…'
               : tab === 'compatibility'
@@ -240,7 +260,8 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
             value={leadEmail}
             onChange={(e) => setLeadEmail(e.target.value)}
           />
-          <button disabled={busy || !leadEmail} onClick={sendLead}>
+          <ConsentCheckbox checked={consent} onChange={setConsent} />
+          <button disabled={busy || !leadEmail || !consent} onClick={sendLead}>
             Сообщить о готовности
           </button>
         </div>
@@ -301,6 +322,49 @@ function JointRow({ label, value }: { label: string; value: number }) {
         {value} · {arcanaName(value)}
       </span>
     </div>
+  );
+}
+
+/**
+ * Согласие на обработку ПДн. Галочка снята по умолчанию и обязательна:
+ * предзаполненное согласие юридически не работает.
+ */
+function ConsentCheckbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label
+      style={{
+        display: 'flex',
+        gap: 10,
+        alignItems: 'flex-start',
+        fontSize: 13,
+        color: 'var(--ink-soft)',
+        cursor: 'pointer',
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        style={{ marginTop: 3, width: 16, height: 16, flex: '0 0 auto' }}
+      />
+      <span>
+        Я согласен на обработку персональных данных (имя и дата рождения) и принимаю{' '}
+        <Link href="/legal/offer" target="_blank">
+          условия оферты
+        </Link>{' '}
+        и{' '}
+        <Link href="/legal/privacy" target="_blank">
+          политику конфиденциальности
+        </Link>
+        .
+      </span>
+    </label>
   );
 }
 

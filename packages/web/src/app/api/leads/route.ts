@@ -8,11 +8,17 @@ import type { OrderInput } from '@/lib/order';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
-  let body: Partial<OrderInput & { email: string; missingArcana: number[] }>;
+  let body: Partial<OrderInput & { email: string; missingArcana: number[]; consent: boolean }>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Некорректный JSON' }, { status: 400 });
+  }
+  if (body.consent !== true) {
+    return NextResponse.json(
+      { error: 'Нужно согласие на обработку персональных данных' },
+      { status: 422 },
+    );
   }
   if (!body.email || !EMAIL_RE.test(body.email)) {
     return NextResponse.json({ error: 'Некорректный email' }, { status: 422 });
@@ -26,6 +32,7 @@ export async function POST(req: NextRequest) {
       email: body.email,
       productType: body.productType!,
       input: body as object,
+      consentAt: new Date(),
       missingArcana: (body.missingArcana ?? []).filter(
         (n) => Number.isInteger(n) && n >= 1 && n <= 22,
       ),

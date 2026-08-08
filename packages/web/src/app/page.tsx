@@ -64,8 +64,9 @@ export default function Home() {
 
   return (
     <>
-      {/* Герой */}
-      <section className="band-dark">
+      {/* Герой: светлая полоса. Тёмный вариант оставлен для секции с ценами —
+          одна тёмная полоса на странице читается как акцент, две спорят между собой. */}
+      <section>
         <div
           className="wrap"
           style={{
@@ -92,12 +93,15 @@ export default function Home() {
               </Link>
             </div>
             <p className="muted" style={{ marginTop: 20 }}>
-              Без регистрации и почты. Полный PDF-разбор — по желанию, от 290 ₽.
+              Расчёт — без регистрации. Для платного PDF понадобится почта: на неё придёт документ.
             </p>
           </div>
 
           <div>
-            <MatrixChart matrix={sample} reversed maxWidth={460} />
+            {/* Светлая палитра: тёмный вариант читается только на .band-dark,
+                а если стили полосы не подгрузились — получаем чёрные кружки
+                на кремовом фоне. Светлый вариант корректен в обоих случаях. */}
+            <MatrixChart matrix={sample} maxWidth={460} />
             <p
               className="muted"
               style={{ textAlign: 'center', marginTop: 12, fontSize: 13 }}

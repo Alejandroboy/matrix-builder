@@ -11,11 +11,19 @@ import { validateOrderInput } from '@/lib/validation';
 import { PRICE_KOPECKS, type OrderInput } from '@/lib/order';
 
 export async function POST(req: NextRequest) {
-  let body: Partial<OrderInput>;
+  let body: Partial<OrderInput> & { consent?: boolean };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Некорректный JSON' }, { status: 400 });
+  }
+
+  // Согласие фиксируем ДО записи персональных данных: без него заказа нет.
+  if (body.consent !== true) {
+    return NextResponse.json(
+      { error: 'Нужно согласие на обработку персональных данных' },
+      { status: 422 },
+    );
   }
 
   const check = validateOrderInput(body);
@@ -43,7 +51,13 @@ export async function POST(req: NextRequest) {
 
   const amount = PRICE_KOPECKS[input.productType];
   const order = await prisma.order.create({
-    data: { productType: input.productType, input: input as object, amount },
+    data: {
+      productType: input.productType,
+      input: input as object,
+      amount,
+      email: input.email,
+      consentAt: new Date(),
+    },
   });
 
   const payment = await createPayment({
