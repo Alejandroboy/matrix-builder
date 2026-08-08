@@ -44,6 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             саморефлексии. Не гадание, не предсказание будущего и не замена консультации
             специалиста.
           </div>
+          <div className="wrap" style={{ marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <Link href="/legal/offer" className="muted">Оферта</Link>
+            <Link href="/legal/privacy" className="muted">Обработка персональных данных</Link>
+          </div>
         </footer>
       </body>
     </html>

@@ -4,6 +4,8 @@
 import { computePersonalMatrix } from '@matrix/engine';
 import type { OrderInput, ProductType } from './order';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export interface ValidationIssue {
   field: string;
   message: string;
@@ -14,6 +16,10 @@ export function validateOrderInput(body: Partial<OrderInput>): {
   issues: ValidationIssue[];
 } {
   const issues: ValidationIssue[] = [];
+
+  if (!body.email || !EMAIL_RE.test(body.email) || body.email.length > 254) {
+    issues.push({ field: 'email', message: 'Укажите корректный адрес почты' });
+  }
   const productType = body.productType as ProductType | undefined;
 
   if (productType !== 'personal' && productType !== 'compatibility') {

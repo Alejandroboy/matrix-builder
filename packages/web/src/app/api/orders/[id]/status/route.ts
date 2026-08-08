@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { issueDownloadToken } from '@/lib/download-token';
+import { sendReportEmail } from '@/lib/mail';
 import { getPayment } from '@/lib/yookassa';
 
 export async function GET(
@@ -48,6 +49,9 @@ export async function GET(
 
   // Токен выдаём ТОЛЬКО для оплаченного заказа: сам факт наличия токена
   // на клиенте уже означает право на скачивание.
+  // Письмо отправляем при любом обнаружении оплаты; функция идемпотентна.
+  if (status === 'paid') await sendReportEmail(id);
+
   const downloadUrl =
     status === 'paid'
       ? `/api/orders/${id}/download?t=${issueDownloadToken(id, process.env.DOWNLOAD_SECRET!)}`
