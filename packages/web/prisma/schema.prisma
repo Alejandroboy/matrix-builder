@@ -41,7 +41,12 @@ model Order {
   // оплату первым — вебхук или опрос статуса.
   emailSentAt DateTime?
 
-  yookassaPaymentId String?   @unique
+  // Robokassa требует ЧИСЛОВОЙ номер счёта: cuid не подходит.
+  // Автоинкремент — наш InvId, по нему приходит подтверждение оплаты.
+  invId Int @unique @default(autoincrement())
+
+  // Идентификатор платежа у провайдера (у Robokassa — номер операции).
+  providerPaymentId String?   @unique
   createdAt         DateTime  @default(now())
   paidAt            DateTime?
   // Когда input обнулён политикой хранения

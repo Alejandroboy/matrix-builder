@@ -954,9 +954,11 @@ __metadata:
     "@matrix/engine": "npm:0.1.0"
     "@prisma/client": "npm:^6.1.0"
     "@types/node": "npm:^22.10.0"
+    "@types/nodemailer": "npm:^8.0.1"
     "@types/react": "npm:^19.0.0"
     "@types/react-dom": "npm:^19.0.0"
     next: "npm:^15.1.0"
+    nodemailer: "npm:^9.0.5"
     prisma: "npm:^6.1.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
@@ -1250,6 +1252,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10c0/f2ba54d3d1fb92e1c57c78d32c3a17655b1e87363b707136f55c422b4838d4054901ce5d27f75bb0e5ecb7ebfee3804e0987822d22b473473008091857a09353
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@types/nodemailer@npm:8.0.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/4370ac478a6811faaa64fcf769556515c72b78c66961cde22be75bb975ce8a964cfbe5e7c0988a99250f3250faa34357c73958b019b3c63dd138ea3784442032
   languageName: node
   linkType: hard
 
@@ -3573,6 +3584,13 @@ __metadata:
   version: 2.0.52
   resolution: "node-releases@npm:2.0.52"
   checksum: 10c0/2c04530e86035c7f46371e167c49a4d99dfe600c010cb1fe53cd040d34dca314720de749d361ebe467aa4213d6d6de330454a2e1ee0f3e2a25fb6eef9b4ab14e
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^9.0.5":
+  version: 9.0.5
+  resolution: "nodemailer@npm:9.0.5"
+  checksum: 10c0/60f7a21497c98c0d275cd12c488af581ef6aee65db575026319ac249dcac210bdab20edf77fe3158176ed3910f70d8c46d89abcd74f57a7170302727e6d05ee3
   languageName: node
   linkType: hard
 

@@ -89,7 +89,8 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
         return;
       }
       window.location.href = data.confirmationUrl;
-    } catch {
+    } catch (error ) {
+      console.log('error', error);
       setError('Сеть недоступна. Проверьте соединение и попробуйте ещё раз.');
     } finally {
       setBusy(false);
