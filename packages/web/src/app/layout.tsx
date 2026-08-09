@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
+  // Базовый адрес: из него Next строит канонические и og-ссылки
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: '/' },
   title: 'Матрица судьбы — рассчитать онлайн бесплатно с расшифровкой',
   description:
     'Бесплатный расчёт матрицы судьбы по дате рождения: арканы характера, отношений и финансов — мгновенно, без регистрации. Совместимость пары по двум датам.',
