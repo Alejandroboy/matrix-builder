@@ -1,9 +1,13 @@
-// GET /api/orders/:id/status — страница возврата с оплаты поллит этот эндпоинт.
+// GET /api/orders/:id/status — страница возврата с оплаты опрашивает этот роут.
+//
+// Опроса платёжного провайдера здесь нет: у Robokassa нет удобного API статуса.
+// Об оплате сообщают два подписанных возврата — ResultURL (сервер-сервер) и
+// SuccessURL (возврат покупателя), оба помечают заказ оплаченным. Здесь мы
+// только читаем состояние и выдаём ссылку на скачивание.
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { issueDownloadToken } from '@/lib/download-token';
 import { sendReportEmail } from '@/lib/mail';
-import { getPayment } from '@/lib/yookassa';
 
 export async function GET(
   _req: Request,
@@ -12,52 +16,23 @@ export async function GET(
   const { id } = await params;
   const order = await prisma.order.findUnique({
     where: { id },
-    select: { id: true, status: true, yookassaPaymentId: true, productType: true },
+    select: { id: true, status: true, productType: true },
   });
   if (!order) return NextResponse.json({ error: 'Заказ не найден' }, { status: 404 });
 
-  let status = order.status;
-
-  /**
-   * Вебхук — оптимизация, а не единственный источник правды.
-   * Он может не дойти: локальная разработка без туннеля, сетевой сбой,
-   * задержка ретраев ЮKassa. Пользователь при этом уже заплатил и смотрит
-   * на «проверяем оплату». Поэтому, пока заказ не оплачен, спрашиваем статус
-   * платежа у API сами — тем же условным UPDATE, что и вебхук, так что
-   * повторные вызовы и гонка с вебхуком безопасны.
-   */
-  if (status === 'created' && order.yookassaPaymentId) {
-    try {
-      const payment = await getPayment(order.yookassaPaymentId);
-      if (payment.status === 'succeeded' && payment.paid) {
-        await prisma.order.updateMany({
-          where: { id, status: 'created' },
-          data: { status: 'paid', paidAt: new Date() },
-        });
-        status = 'paid';
-      } else if (payment.status === 'canceled') {
-        await prisma.order.updateMany({
-          where: { id, status: 'created' },
-          data: { status: 'canceled' },
-        });
-        status = 'canceled';
-      }
-    } catch {
-      // ЮKassa недоступна — оставляем created, клиент опросит ещё раз
-    }
-  }
+  // Подстраховка: если письмо не ушло в момент подтверждения оплаты
+  // (например, SMTP был недоступен), пробуем ещё раз. Функция идемпотентна.
+  if (order.status === 'paid') await sendReportEmail(id);
 
   // Токен выдаём ТОЛЬКО для оплаченного заказа: сам факт наличия токена
   // на клиенте уже означает право на скачивание.
-  // Письмо отправляем при любом обнаружении оплаты; функция идемпотентна.
-  if (status === 'paid') await sendReportEmail(id);
-
   const downloadUrl =
-    status === 'paid'
+    order.status === 'paid'
       ? `/api/orders/${id}/download?t=${issueDownloadToken(id, process.env.DOWNLOAD_SECRET!)}`
       : null;
 
-  return NextResponse.json({ status, downloadUrl, productType: order.productType }, {
-    headers: { 'Cache-Control': 'no-store' },
-  });
+  return NextResponse.json(
+    { status: order.status, downloadUrl, productType: order.productType },
+    { headers: { 'Cache-Control': 'no-store' } },
+  );
 }

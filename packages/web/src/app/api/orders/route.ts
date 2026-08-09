@@ -1,9 +1,13 @@
 // POST /api/orders
-// Поток тот же, что в Неустойке: валидация → покрытие контентом →
-// заказ в базе → платёж в ЮKassa → confirmation_url клиенту.
+//
+// Поток: валидация → согласие на обработку ПДн → проверка покрытия контентом →
+// заказ в базе → ссылка на оплату Robokassa.
+//
+// Провайдер выбран из-за налогового статуса продавца: YooKassa не подключает
+// самозанятых, Robokassa через «Робочеки СМЗ» формирует чек в «Мой налог».
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { createPayment } from '@/lib/yookassa';
+import { buildPaymentUrl, isPaymentsConfigured } from '@/lib/robokassa';
 import { computeCompatibility, computePersonalMatrix, Arcana } from '@matrix/engine';
 import { assertPairCoverage } from '@matrix/docgen';
 import { getContent } from '@/lib/content';
@@ -23,6 +27,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: 'Нужно согласие на обработку персональных данных' },
       { status: 422 },
+    );
+  }
+
+  // Пока ключи Robokassa не получены, заказ не создаём: лучше честное
+  // «оплата скоро», чем заказ, который невозможно оплатить.
+  if (!isPaymentsConfigured()) {
+    return NextResponse.json(
+      { error: 'Оплата временно недоступна. Мы уже подключаем платежи.' },
+      { status: 503 },
     );
   }
 
@@ -60,25 +73,20 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const payment = await createPayment({
-    orderId: order.id,
+  // Ссылка формируется из invId — числового номера счёта, который Postgres
+  // выдал при создании заказа. Robokassa не принимает строковые идентификаторы.
+  const confirmationUrl = buildPaymentUrl({
+    invId: order.invId,
     amountKopecks: amount,
     description:
       input.productType === 'compatibility'
-        ? `Разбор совместимости, заказ ${order.id}`
-        : `Личный разбор матрицы, заказ ${order.id}`,
-    returnUrl: `${process.env.APP_URL}/order/${order.id}`,
-  });
-
-  await prisma.order.update({
-    where: { id: order.id },
-    data: { yookassaPaymentId: payment.id },
-  });
-
-  return NextResponse.json({
+        ? 'Разбор совместимости по матрице судьбы'
+        : 'Разбор матрицы судьбы',
+    email: input.email,
     orderId: order.id,
-    confirmationUrl: payment.confirmation?.confirmation_url,
   });
+
+  return NextResponse.json({ orderId: order.id, confirmationUrl });
 }
 
 function neededForPersonal(birthA: string): Arcana[] {

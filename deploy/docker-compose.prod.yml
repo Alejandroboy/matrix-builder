@@ -1,0 +1,25 @@
+# PostgreSQL на боевом сервере. Приложение и nginx ставятся нативно —
+# так меньше слоёв и проще смотреть логи, а база в контейнере даёт
+# предсказуемые бэкапы и обновления.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: matrix-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: matrix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?переменная обязательна}
+      POSTGRES_DB: matrix
+    # Порт наружу НЕ пробрасываем: база доступна только с самого сервера.
+    ports:
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - matrix_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U matrix -d matrix']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  matrix_pgdata:
