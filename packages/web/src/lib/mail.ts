@@ -12,11 +12,23 @@ import type { ProductType } from './order';
 function transport() {
   const host = process.env.SMTP_HOST;
   if (!host) return null; // в деве без SMTP просто не шлём
+
+  const port = Number(process.env.SMTP_PORT ?? 465);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
   return nodemailer.createTransport({
     host,
-    port: Number(process.env.SMTP_PORT ?? 465),
-    secure: Number(process.env.SMTP_PORT ?? 465) === 465,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    port,
+    // 465 — SSL сразу, 25 и 587 — обычное соединение с возможным STARTTLS
+    secure: port === 465,
+    // Авторизация опциональна: на тарифах VDS СТАРТ у NetAngels исходящие
+    // SMTP-порты закрыты, и почта уходит через их релей skvmrelay.netangels.ru
+    // на порту 25 БЕЗ логина и пароля. Если передать пустой auth, nodemailer
+    // всё равно пошлёт команду AUTH и получит отказ.
+    ...(user && pass ? { auth: { user, pass } } : {}),
+    // Релей может не предлагать TLS — не считаем это ошибкой
+    tls: { rejectUnauthorized: false },
   });
 }
 

@@ -26,7 +26,7 @@ export const LEGAL = {
   /** Почта для обращений субъектов ПДн и покупателей */
   email: 'admin@matricasudba.ru',
   /** Домен сайта без протокола */
-  site: 'матрица-судьбы.рф',
+  site: 'matricasudba.ru',
   /** Дата последней редакции документов */
   updatedAt: '09.08.26',
 } as const;
