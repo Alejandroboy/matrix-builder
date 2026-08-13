@@ -7,3 +7,10 @@
  * ними вес.
  */
 export const SITE_URL = process.env.APP_URL?.replace(/\/$/, '') ?? 'https://matricasudba.ru';
+
+/**
+ * Код подтверждения прав в Яндекс.Вебмастере (мета-тег).
+ * Берётся из панели: Настройки → Права доступа → Мета-тег.
+ * Значение — только содержимое content, без самого тега.
+ */
+export const YANDEX_VERIFICATION = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION ?? '';

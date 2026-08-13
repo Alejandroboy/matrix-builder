@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import LogoMark from '@/components/logo-mark';
+import { Suspense } from 'react';
+import Metrika from '@/components/metrika';
 import './globals.css';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, YANDEX_VERIFICATION } from '@/lib/site';
 import { LEGAL, sellerLine } from '@/lib/legal';
 
 export const metadata: Metadata = {
   // Базовый адрес: из него Next строит канонические и og-ссылки
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: '/' },
+  // Подтверждение прав в Вебмастере. Пустое значение — тег не выводится.
+  ...(YANDEX_VERIFICATION ? { verification: { yandex: YANDEX_VERIFICATION } } : {}),
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -32,6 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru">
       <body>
+        <Suspense fallback={null}>
+          <Metrika />
+        </Suspense>
         <header className="site-header">
           <div
             className="wrap"

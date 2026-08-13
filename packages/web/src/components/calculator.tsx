@@ -14,6 +14,7 @@ import {
 import MatrixChart from './matrix-chart';
 import ArcanaSections from './arcana-sections';
 import { arcanaName } from '@/lib/arcana-names';
+import { reachGoal } from './metrika';
 
 type Tab = 'personal' | 'compatibility';
 
@@ -63,6 +64,7 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
   const teaser = useArcanaTeaser(teaserArcana);
 
   async function buy() {
+    reachGoal('checkout_start', { product: tab });
     setBusy(true);
     setError(null);
     setLeadMode(null);
@@ -88,9 +90,9 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
         setError(data.error ?? 'Заказ не создался. Попробуйте ещё раз.');
         return;
       }
+      reachGoal('payment_redirect', { product: tab });
       window.location.href = data.confirmationUrl;
-    } catch (error ) {
-      console.log('error', error);
+    } catch {
       setError('Сеть недоступна. Проверьте соединение и попробуйте ещё раз.');
     } finally {
       setBusy(false);
@@ -113,7 +115,10 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
           missingArcana: leadMode?.missingArcana ?? [],
         }),
       });
-      if (res.ok) setLeadSent(true);
+      if (res.ok) {
+        reachGoal('lead_submitted');
+        setLeadSent(true);
+      }
     } finally {
       setBusy(false);
     }

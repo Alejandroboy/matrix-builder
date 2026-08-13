@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { computePersonalMatrix, computeCompatibility } from '@matrix/engine';
 import MatrixChart from './matrix-chart';
+import { reachGoal } from './metrika';
 
 type Status = 'created' | 'paid' | 'canceled';
 type ProductType = 'personal' | 'compatibility';
@@ -58,6 +59,16 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
     return () => { cancelled = true; clearTimeout(timer); };
   }, [orderId]);
 
+  useEffect(() => {
+    if (status !== 'paid') return;
+    // Один заказ — одна конверсия: страницу можно открыть повторно,
+    // а по ссылке из письма покупатель почти наверняка вернётся ещё раз.
+    const key = `goal_paid_${orderId}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    reachGoal('purchase', { product: productType });
+  }, [status, orderId, productType]);
+
   const isPair = productType === 'compatibility';
 
   // Расчёт мгновенный и на клиенте — тот же движок, что и в калькуляторе.
@@ -107,7 +118,7 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
             распечатайте. Копию мы отправили на вашу почту.
           </p>
           <div>
-            <a href={downloadUrl}>
+            <a href={downloadUrl} onClick={() => reachGoal('download_pdf')}>
               <button>Скачать разбор (.pdf)</button>
             </a>
           </div>
