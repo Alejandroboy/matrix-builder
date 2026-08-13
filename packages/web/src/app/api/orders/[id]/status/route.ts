@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { issueDownloadToken } from '@/lib/download-token';
 import { sendReportEmail } from '@/lib/mail';
+import type { OrderInput } from '@/lib/order';
 
 export async function GET(
   _req: Request,
@@ -16,7 +17,7 @@ export async function GET(
   const { id } = await params;
   const order = await prisma.order.findUnique({
     where: { id },
-    select: { id: true, status: true, productType: true },
+    select: { id: true, status: true, productType: true, input: true },
   });
   if (!order) return NextResponse.json({ error: 'Заказ не найден' }, { status: 404 });
 
@@ -31,8 +32,22 @@ export async function GET(
       ? `/api/orders/${id}/download?t=${issueDownloadToken(id, process.env.DOWNLOAD_SECRET!)}`
       : null;
 
+  // Даты и имена нужны странице, чтобы нарисовать схему. Отдаём только их:
+  // почта покупателя наружу не уходит, хотя в заказе она есть.
+  // input обнуляется политикой хранения через 30 дней — тогда придёт null,
+  // и страница просто не покажет схему.
+  const input = order.input as unknown as OrderInput | null;
+  const chart = input
+    ? {
+      birthDateA: input.birthDateA,
+      nameA: input.nameA,
+      birthDateB: input.birthDateB ?? null,
+      nameB: input.nameB ?? null,
+    }
+    : null;
+
   return NextResponse.json(
-    { status: order.status, downloadUrl, productType: order.productType },
+    { status: order.status, downloadUrl, productType: order.productType, chart },
     { headers: { 'Cache-Control': 'no-store' } },
   );
 }
