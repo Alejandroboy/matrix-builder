@@ -56,7 +56,6 @@ export default function Metrika() {
         })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
         ym(${ID}, "init", {
-          ssr: true,
           defer: true,
           clickmap: true,
           trackLinks: true,
