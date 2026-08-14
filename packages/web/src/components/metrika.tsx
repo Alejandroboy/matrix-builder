@@ -1,22 +1,8 @@
 'use client';
 
-// Яндекс.Метрика.
-//
-// Две тонкости App Router, из-за которых нельзя просто вставить код счётчика:
-//  1. Переходы между страницами идут без перезагрузки документа — счётчик их
-//     не замечает, просмотр нужно отправлять вручную на смену маршрута.
-//  2. usePathname отдаёт только путь и теряет строку запроса, а с ней UTM-метки.
-//     Поэтому берём и searchParams — иначе платный трафик в отчётах схлопнется
-//     в «прямые заходы».
-//
-// Ждать загрузки tag.js не нужно и вредно: сниппет синхронно создаёт функцию
-// window.ym, которая складывает вызовы в очередь ym.a. Всё, что отправлено до
-// загрузки скрипта, уйдёт само, когда он подтянется. Поэтому здесь нет ни
-// опроса готовности, ни собственных событий — они только добавляли бы точки
-// отказа.
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -26,26 +12,42 @@ declare global {
 
 const ID = Number(process.env.NEXT_PUBLIC_METRIKA_ID ?? 0);
 
+function sendHit(pathname: string, qs: string) {
+  window.ym?.(ID, 'hit', pathname + (qs ? `?${qs}` : ''));
+}
+
 export default function Metrika() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isFirstRun = useRef(true);
 
   useEffect(() => {
+    // Первый рендер обрабатывает onReady скрипта — тут его пропускаем,
+    // чтобы не было гонки: window.ym может быть ещё не готов.
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
     if (!ID || typeof window.ym !== 'function') return;
-    const qs = searchParams.toString();
-    window.ym(ID, 'hit', pathname + (qs ? `?${qs}` : ''));
+    sendHit(pathname, searchParams.toString());
   }, [pathname, searchParams]);
 
-  if (!ID) return null; // без номера счётчика ничего не подключаем
+  if (!ID) return null;
 
   return (
-    <Script id="metrika" strategy="afterInteractive">
+    <Script
+      id="metrika"
+      strategy="afterInteractive"
+      onReady={() => {
+        // Скрипт точно инициализирован — шлём хит первой страницы здесь,
+        // а не надеемся на порядок эффектов.
+        sendHit(pathname, searchParams.toString());
+      }}
+    >
       {`
         (function(m,e,t,r,i,k,a){
           m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
           m[i].l=1*new Date();
-          // Защита от повторной вставки: при навигации компонент может
-          // смонтироваться заново, и tag.js подключился бы дважды.
           for (var j = 0; j < document.scripts.length; j++) {
             if (document.scripts[j].src === r) { return; }
           }
@@ -66,13 +68,6 @@ export default function Metrika() {
   );
 }
 
-/**
- * Отправка цели. Вызывается в моменты воронки: нажали купить, ушли на оплату,
- * оплата подтверждена, скачали документ.
- *
- * Если tag.js ещё не загрузился — вызов попадёт в очередь ym.a и уйдёт позже,
- * так что дожидаться чего-либо не требуется.
- */
 export function reachGoal(name: string, params?: Record<string, unknown>): void {
   if (!ID || typeof window === 'undefined') return;
   try {
