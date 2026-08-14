@@ -13,6 +13,7 @@
     "db:up": "cd packages/web && docker compose up -d",
     "db:down": "cd packages/web && docker compose down",
     "db:migrate": "cd packages/web && npx prisma migrate dev && npx prisma generate",
-    "clean": "rm -rf packages/*/dist packages/web/.next"
+    "clean": "rm -rf packages/*/dist packages/web/.next",
+    "content-similarity": "node scripts/content-similarity.mjs"
   }
 }

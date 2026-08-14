@@ -1,5 +1,10 @@
-// Программная страница «N аркан в матрице судьбы».
+// Программная страница «N аркан в матрице судьбы» — портрет энергии.
 // Контент — из тех же JSON, что и PDF: один источник, деплой = git push.
+//
+// Блоки про отношения (asPartner / needsFromPartner / conflictPattern) вынесены
+// на /arkan/[n]/otnosheniya. Держать их здесь означало бы, что дочерняя
+// страница — строгое подмножество этой: поисковик склеивает такие пары
+// и выбрасывает одну из них как малоценную.
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { toArcana } from '@matrix/engine';
@@ -18,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ n: string
   return {
     title: `${n} аркан «${item.card.name}» в матрице судьбы — значение и расшифровка`,
     description: item.prose.blocks.portraitShort.slice(0, 155),
+    alternates: { canonical: `/arkan/${n}` },
   };
 }
 
@@ -52,15 +58,37 @@ export default async function ArkanPage({ params }: { params: Promise<{ n: strin
           <h2>Портрет</h2>
           <Prose text={prose.blocks.portraitFull} />
 
-          <h2>В отношениях</h2>
-          <Prose text={prose.blocks.asPartner} />
-          <Prose text={prose.blocks.needsFromPartner} />
+          {/* Виньетка нигде на сайте не показывалась, хотя писалась как
+              уникальная сценка против дедупликации. Здесь она к месту:
+              иллюстрирует портрет и добавляет странице свой текст. */}
+          <blockquote className="pull-quote" style={{ margin: '28px 0' }}>
+            {card.vignette}
+          </blockquote>
 
-          <h2>Типичный конфликт</h2>
-          <Prose text={prose.blocks.conflictPattern} />
+          {/* Отдельный заголовок под запрос «аркан N в центре матрицы»:
+              новую страницу он не требует — центр и есть портрет энергии. */}
+          <h2>Аркан {num} в центре матрицы</h2>
+          {prose.blocks.inCenter ? (
+            <Prose text={prose.blocks.inCenter} />
+          ) : (
+            <p>{card.positionNotes.center}</p>
+          )}
+
+          <h2>На других позициях</h2>
+          <p>
+            На линии сердца эта энергия описывает отношения — каким партнёром бывает
+            человек и что повторяется в его паре:{' '}
+            <Link href={`/arkan/${num}/otnosheniya`}>
+              аркан {num} в отношениях
+            </Link>
+            .
+          </p>
+          <p>
+            <strong>На линии денег.</strong> {card.positionNotes.money}
+          </p>
         </article>
 
-        <aside className="stack" style={{ position: 'sticky', top: 84 }}>
+        <aside className="stack">
           <div className="card">
             <h3>Сильные стороны</h3>
             <ul style={{ paddingLeft: 18, margin: 0 }}>
@@ -82,13 +110,14 @@ export default async function ArkanPage({ params }: { params: Promise<{ n: strin
             </ul>
           </div>
           <div className="card" style={{ borderColor: 'var(--ink)' }}>
-            <h3>Аркан в позициях</h3>
-            <p className="muted" style={{ marginBottom: 4 }}>В центре</p>
-            <p style={{ fontSize: 15 }}>{card.positionNotes.center}</p>
-            <p className="muted" style={{ marginBottom: 4 }}>Под сердцем</p>
-            <p style={{ fontSize: 15 }}>{card.positionNotes.heart}</p>
-            <p className="muted" style={{ marginBottom: 4 }}>На линии денег</p>
-            <p style={{ fontSize: 15, marginBottom: 0 }}>{card.positionNotes.money}</p>
+            <h3>Аркан {num} в отношениях</h3>
+            <p className="muted" style={{ fontSize: 15 }}>
+              Каким партнёром бывает «{card.name}», что ему нужно от второй половины
+              и какой конфликт повторяется в паре.
+            </p>
+            <p style={{ margin: 0 }}>
+              <Link href={`/arkan/${num}/otnosheniya`}>Читать разбор →</Link>
+            </p>
           </div>
         </aside>
       </div>

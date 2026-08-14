@@ -76,12 +76,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const arcana: MetadataRoute.Sitemap = numbers.map((n) => ({
-    url: `${SITE_URL}/arkan/${n}`,
-    lastModified: arcanaDates.get(n) ?? FALLBACK,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
+  const arcana: MetadataRoute.Sitemap = numbers.flatMap((n) => {
+    const lastModified = arcanaDates.get(n) ?? FALLBACK;
+    return [
+      {
+        url: `${SITE_URL}/arkan/${n}`,
+        lastModified,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      },
+      {
+        // Позиционная страница: тот же источник контента, та же дата правки
+        url: `${SITE_URL}/arkan/${n}/otnosheniya`,
+        lastModified,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      },
+    ];
+  });
 
   return [...main, ...arcana];
 }

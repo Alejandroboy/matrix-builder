@@ -30,19 +30,30 @@ export default function ArkanIndex() {
         }}
       >
         {items.map(([arcana, item]) => (
-          <Link
-            key={arcana}
-            href={`/arkan/${arcana}`}
-            className="card"
-            style={{ textDecoration: 'none', display: 'block' }}
-          >
-            <strong style={{ fontFamily: 'var(--serif)', fontSize: 17 }}>
-              {arcana} · {item.card.name}
-            </strong>
-            <span className="muted" style={{ display: 'block', marginTop: 4 }}>
-              {item.card.keywords.slice(0, 3).join(' · ')}
-            </span>
-          </Link>
+          // Вложенная ссылка внутри Link недопустима, поэтому карточка —
+          // обычный div с двумя самостоятельными ссылками.
+          <div key={arcana} className="card">
+            <Link href={`/arkan/${arcana}`} className="arcana-card__main">
+              <strong className="arcana-card__title">
+                {arcana} · {item.card.name}
+              </strong>
+              <span className="arcana-card__keywords">
+                {item.card.keywords.slice(0, 3).join(' · ')}
+              </span>
+            </Link>
+            {/* Прямая ссылка на позиционную страницу: у новых URL должна быть
+                входящая перелинковка не только с родительского аркана.
+                Подвал за разделителем — чтобы переход не читался как подпись
+                к карточке. */}
+            <div className="arcana-card__foot">
+              <Link
+                href={`/arkan/${arcana}/otnosheniya`}
+                className="arcana-card__link"
+              >
+                Аркан {arcana} в отношениях →
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
 

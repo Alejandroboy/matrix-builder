@@ -382,9 +382,39 @@ details.acc-card summary {
 details.acc-card summary::-webkit-details-marker { display: none; }
 details.acc-card > div { padding: 0 20px 20px; }
 
-/* ============================================================
-   Мобильная раскладка
-   ============================================================ */
+/* Карточка аркана в хабе.
+   Две цели в одной карточке: портрет и разбор отношений. Раньше карточка была
+   одной сплошной ссылкой, поэтому вторая ссылка внутри читалась как подпись,
+   а не как переход. Заголовок получает признаки ссылки, вторая цель уходит
+   в подвал за разделитель — так видно, что кликабельных мест два. */
+.arcana-card__main {
+  display: block;
+  text-decoration: none;
+  color: var(--ink);
+}
+.arcana-card__title {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+}
+.arcana-card__main:hover .arcana-card__title {
+  color: var(--stamp);
+  text-decoration: underline;
+}
+.arcana-card__keywords {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+.arcana-card__foot {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+.arcana-card__link { font-size: 14px; text-decoration: none; }
+.arcana-card__link:hover { text-decoration: underline; }
 
 /* Страховка от горизонтального скролла: один широкий элемент не должен
    растягивать весь документ. Именно clip, а не hidden — hidden на предке
