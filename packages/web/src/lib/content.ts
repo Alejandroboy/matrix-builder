@@ -9,7 +9,13 @@ import {
 } from '@matrix/docgen';
 import * as fs from 'fs';
 
-const ROOT = path.resolve(process.cwd(), '../../content');
+/**
+ * Корень контента. Экспортируется, потому что дата правки JSON-файлов нужна
+ * карте сайта: она и есть честная дата изменения страницы аркана.
+ */
+export const CONTENT_ROOT = path.resolve(process.cwd(), '../../content');
+
+const ROOT = CONTENT_ROOT;
 
 let cache: { content: ArcanaContentMap; pairRules: PairRulesFile } | null = null;
 
