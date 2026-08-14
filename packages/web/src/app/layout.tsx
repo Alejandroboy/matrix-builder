@@ -40,23 +40,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Metrika />
         </Suspense>
         <header className="site-header">
-          <div
-            className="wrap"
-            style={{ display: 'flex', alignItems: 'center', gap: 16, height: 64 }}
-          >
-            <Link
-              href="/"
-              style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--ink)', textDecoration: 'none' }}
-            >
+          {/* Раскладка шапки живёт в globals.css (.site-header .wrap, .brand,
+              .site-nav): инлайновые стили не перебиваются медиазапросами,
+              а на узком экране словесный логотип и кнопка должны уходить. */}
+          <div className="wrap">
+            <Link href="/" className="brand">
               <LogoMark size={30} />
-              <strong style={{ fontFamily: 'var(--serif)', fontSize: 19 }}>Матрица судьбы</strong>
+              <strong>Матрица судьбы</strong>
             </Link>
 
-            <nav style={{ display: 'flex', gap: 4, marginLeft: 'auto', alignItems: 'center' }}>
+            <nav className="site-nav">
               <Link className="nav-pill" href="/matrica">Моя матрица</Link>
               <Link className="nav-pill" href="/sovmestimost">Совместимость</Link>
               <Link className="nav-pill" href="/arkan">Арканы</Link>
-              <Link href="/matrica" style={{ marginLeft: 8 }}>
+              <Link href="/matrica" className="nav-cta" style={{ marginLeft: 8 }}>
                 <button>Рассчитать бесплатно</button>
               </Link>
             </nav>

@@ -232,20 +232,38 @@ export default function MatrixChart({
         <circle key={`t${i}`} cx={d.x} cy={d.y} r={d.r} fill={d.fill}
                 stroke={d.stroke} strokeWidth={d.sw} />
       ))}
-      {yearLabels.map((l, i) => (
+      {/* Значения шкалы (крупные) и подписи диапазонов лет (7.5px) разведены
+          в разные группы: вторые скрываются на узком экране через CSS —
+          при ширине 400px они нечитаемы и только зашумляют фигуру. */}
+      {yearLabels.filter((l) => !l.rot).map((l, i) => (
         <text
           key={`y${i}`} x={l.x} y={l.y} dy="0.35em" textAnchor="middle"
           fill={l.color} opacity={l.op ?? 1}
-          transform={l.rot ? `rotate(${l.rot} ${l.x} ${l.y})` : undefined}
           style={{
-            fontFamily: l.rot ? 'var(--sans)' : 'var(--serif)',
-            fontSize: l.fs, fontWeight: l.rot ? 600 : 700,
+            fontFamily: 'var(--serif)',
+            fontSize: l.fs, fontWeight: 700,
             fontVariantNumeric: 'tabular-nums',
           }}
         >
           {l.text}
         </text>
       ))}
+      <g className="mx-year-spans">
+        {yearLabels.filter((l) => l.rot).map((l, i) => (
+          <text
+            key={`s${i}`} x={l.x} y={l.y} dy="0.35em" textAnchor="middle"
+            fill={l.color} opacity={l.op ?? 1}
+            transform={`rotate(${l.rot} ${l.x} ${l.y})`}
+            style={{
+              fontFamily: 'var(--sans)',
+              fontSize: l.fs, fontWeight: 600,
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {l.text}
+          </text>
+        ))}
+      </g>
 
       {/* Каркас: оси, диагонали, ромб, квадрат */}
       <line x1={100} y1={C} x2={600} y2={C} stroke={t.line} strokeWidth={1.5} />

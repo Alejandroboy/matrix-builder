@@ -26,7 +26,7 @@ export default function ArkanIndex() {
         style={{
           display: 'grid',
           gap: 12,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
         }}
       >
         {items.map(([arcana, item]) => (

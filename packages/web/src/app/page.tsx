@@ -67,29 +67,25 @@ export default function Home() {
       {/* Герой: светлая полоса. Тёмный вариант оставлен для секции с ценами —
           одна тёмная полоса на странице читается как акцент, две спорят между собой. */}
       <section>
-        <div
-          className="wrap"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(300px, 1.05fr) minmax(280px, 0.95fr)',
-            gap: 48,
-            alignItems: 'center',
-            padding: '96px 20px 88px',
-          }}
-        >
+        <div className="wrap split split-hero">
           <div>
             <div className="eyebrow">Матрица судьбы · расчёт по дате рождения</div>
             <h1 className="display">Восемь чисел — и характер виден как на ладони</h1>
-            <p className="lead" style={{ color: 'rgba(251,250,247,0.82)' }}>
+            {/* Цвет не переопределяем: герой — светлая полоса, и заданный
+                здесь ранее почти белый rgba(251,250,247,…) делал абзац
+                невидимым на кремовом фоне. */}
+            <p className="lead">
               Дата рождения раскладывается в схему из восьми позиций: характер, отношения,
               деньги. Это арифметика, а не гадание — и считается мгновенно, прямо в браузере.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
+              {/* on-dark/ghost-on-dark рисуют бумажную кнопку с бумажной же
+                  рамкой — на кремовом фоне героя они пропадали. */}
               <Link href="/matrica">
-                <button className="on-dark">Рассчитать свою матрицу</button>
+                <button>Рассчитать свою матрицу</button>
               </Link>
               <Link href="#how">
-                <button className="ghost-on-dark">Как это работает</button>
+                <button className="ghost">Как это работает</button>
               </Link>
             </div>
             <p className="muted" style={{ marginTop: 20 }}>
@@ -134,11 +130,13 @@ export default function Home() {
 
       {/* Пример разбора */}
       <section className="wrap" style={{ paddingBottom: 88 }}>
-        <div className="card" style={{ padding: 48 }}>
+        <div className="card pad-lg">
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              // min(300px, 100%) — иначе трек остаётся 300px и вылезает
+              // за карточку на узком экране
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
               gap: 40,
               alignItems: 'center',
             }}
@@ -185,10 +183,9 @@ export default function Home() {
       {/* Баннер совместимости */}
       <section className="wrap" style={{ paddingBottom: 88 }}>
         <div
-          className="band-dark"
+          className="band-dark pad-lg"
           style={{
             borderRadius: 2,
-            padding: 48,
             display: 'flex',
             gap: 32,
             alignItems: 'center',
@@ -219,7 +216,7 @@ export default function Home() {
             style={{
               display: 'grid',
               gap: 20,
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
               alignItems: 'start',
             }}
           >

@@ -144,7 +144,7 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
         style={{
           display: 'grid',
           gap: 16,
-          gridTemplateColumns: tab === 'compatibility' ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr',
+          gridTemplateColumns: tab === 'compatibility' ? 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))' : '1fr',
         }}
       >
         <PersonInputs
@@ -170,7 +170,7 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
           style={{
             display: 'grid',
             gap: 16,
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))',
             alignItems: 'start',
           }}
         >
@@ -189,7 +189,7 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
             style={{
               display: 'grid',
               gap: 16,
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
             }}
           >
             <div className="card">

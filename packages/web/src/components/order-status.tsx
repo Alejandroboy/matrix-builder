@@ -95,7 +95,7 @@ export default function OrderStatus({ orderId }: { orderId: string }) {
           display: 'grid',
           gap: 16,
           gridTemplateColumns:
-            matrices.length > 1 ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr',
+            matrices.length > 1 ? 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))' : '1fr',
         }}
       >
         {matrices.map((x, i) => (

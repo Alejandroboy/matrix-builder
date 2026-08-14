@@ -381,3 +381,85 @@ details.acc-card summary {
 }
 details.acc-card summary::-webkit-details-marker { display: none; }
 details.acc-card > div { padding: 0 20px 20px; }
+
+/* ============================================================
+   Мобильная раскладка
+   ============================================================ */
+
+/* Страховка от горизонтального скролла: один широкий элемент не должен
+   растягивать весь документ. Именно clip, а не hidden — hidden на предке
+   отключает position: sticky у шапки. */
+html, body { overflow-x: clip; }
+
+/* Двухколоночные секции.
+   Инлайновый grid-template-columns с minmax(300px, …) не схлопывается
+   никогда: минимальный размер трека остаётся 300px, и на экране 440px
+   браузер честно рисует 628px с горизонтальным скроллом. Минимум обязан
+   быть нулевым, а точка слома — явной. */
+.split { display: grid; }
+.split-hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 48px;
+  align-items: center;
+  padding: 96px 20px 88px;
+}
+.split-article {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  padding: 56px 20px 24px;
+}
+
+@media (max-width: 900px) {
+  .split-hero, .split-article { grid-template-columns: minmax(0, 1fr); }
+  .split-hero { gap: 32px; padding: 56px 20px 48px; }
+  .split-article { gap: 28px; padding: 40px 20px 24px; }
+  /* Колонка, уехавшая под текст, «прилипать» уже не должна */
+  .split-article > aside { position: static; }
+}
+
+/* Крупные внутренние отступы — только там, где есть ширина.
+   Класс вместо inline padding: 48 именно для того, чтобы медиазапрос
+   мог его перебить. */
+.pad-lg { padding: 48px; }
+@media (max-width: 720px) {
+  .pad-lg { padding: 20px; }
+  .card { padding: 16px; }
+}
+
+/* Шапка */
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 64px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+/* Логотип не переносится на вторую строку и не ломает высоту шапки */
+.brand strong { font-family: var(--serif); font-size: 19px; white-space: nowrap; }
+.site-nav { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+
+@media (max-width: 780px) {
+  /* Кнопка дублирует пункт «Моя матрица» — на узком экране лишняя */
+  .site-nav .nav-cta { display: none; }
+  .nav-pill { padding: 6px 10px; font-size: 13px; }
+}
+@media (max-width: 560px) {
+  /* Остаётся знак: четыре пункта и словесный логотип в 360px не помещаются */
+  .brand strong { display: none; }
+  .site-header .wrap { gap: 8px; }
+  .nav-pill { padding: 6px 8px; }
+}
+
+/* Октаграмма: подписи диапазонов лет («0-1», «1-2», …) набраны 7.5px.
+   На узком экране схема ужимается вдвое, и они превращаются в грязь
+   вокруг фигуры. Геометрию кольца оставляем — убираем только шум. */
+@media (max-width: 720px) {
+  .mx-year-spans { display: none; }
+}

@@ -47,16 +47,7 @@ export default async function ArkanPage({ params }: { params: Promise<{ n: strin
         </div>
       </section>
 
-      <div
-        className="wrap"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(320px, 1.6fr) minmax(260px, 1fr)',
-          gap: 40,
-          alignItems: 'start',
-          padding: '56px 20px 24px',
-        }}
-      >
+      <div className="wrap split split-article">
         <article>
           <h2>Портрет</h2>
           <Prose text={prose.blocks.portraitFull} />
