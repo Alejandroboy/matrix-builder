@@ -55,7 +55,12 @@ export default async function ArkanPage({ params }: { params: Promise<{ n: strin
 
       <div className="wrap split split-article">
         <article>
-          <h2>Портрет</h2>
+          {/* «Значение», а не «Портрет»: первый H2 страницы должен повторять
+              формулировку запроса («аркан N значение») и title, а не быть
+              редакторским словом. */}
+          <h2>
+            Аркан {num} «{card.name}» — значение
+          </h2>
           <Prose text={prose.blocks.portraitFull} />
 
           {/* Виньетка нигде на сайте не показывалась, хотя писалась как

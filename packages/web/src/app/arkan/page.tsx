@@ -30,22 +30,27 @@ export default function ArkanIndex() {
         }}
       >
         {items.map(([arcana, item]) => (
-          // Вложенная ссылка внутри Link недопустима, поэтому карточка —
-          // обычный div с двумя самостоятельными ссылками.
+          // Заголовок — не ссылка: оба перехода подписаны явно и лежат
+          // в подвале. Иначе на тач-устройствах, где нет ховера, непонятно,
+          // что кликабельных мест два.
+          //
+          // «Значение», а не «портрет»: портрет — это заголовок раздела внутри
+          // страницы, в анкоре он без контекста не читается. «Значение» же —
+          // слово, которым запрос и формулируют («1 аркан значение»), и оно
+          // совпадает с title целевой страницы.
           <div key={arcana} className="card">
-            <Link href={`/arkan/${arcana}`} className="arcana-card__main">
-              <strong className="arcana-card__title">
-                {arcana} · {item.card.name}
-              </strong>
-              <span className="arcana-card__keywords">
-                {item.card.keywords.slice(0, 3).join(' · ')}
-              </span>
-            </Link>
-            {/* Прямая ссылка на позиционную страницу: у новых URL должна быть
-                входящая перелинковка не только с родительского аркана.
-                Подвал за разделителем — чтобы переход не читался как подпись
-                к карточке. */}
+            <strong className="arcana-card__title">
+              {arcana} · {item.card.name}
+            </strong>
+            <span className="arcana-card__keywords">
+              {item.card.keywords.slice(0, 3).join(' · ')}
+            </span>
             <div className="arcana-card__foot">
+              <Link href={`/arkan/${arcana}`} className="arcana-card__link">
+                Аркан {arcana} — значение →
+              </Link>
+              {/* Прямая ссылка на позиционную страницу: у новых URL должна быть
+                  входящая перелинковка не только с родительского аркана. */}
               <Link
                 href={`/arkan/${arcana}/otnosheniya`}
                 className="arcana-card__link"
