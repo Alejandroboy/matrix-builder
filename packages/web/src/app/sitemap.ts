@@ -68,6 +68,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${SITE_URL}/kak-rasschitat`,
+      lastModified: src('kak-rasschitat', 'page.tsx'),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       // Хаб перечисляет разборы, поэтому меняется вместе с самым свежим из них
       url: `${SITE_URL}/arkan`,
       lastModified: newest([...arcanaDates.values()]),

@@ -382,6 +382,45 @@ details.acc-card summary {
 details.acc-card summary::-webkit-details-marker { display: none; }
 details.acc-card > div { padding: 0 20px 20px; }
 
+/* Блок перехода к покупке. Визуально отделён от карточек результата:
+   до него — бесплатный расчёт, после — платный документ. */
+.offer {
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  padding: 24px;
+  background: var(--paper-raised);
+}
+.offer__seen {
+  margin: 0 0 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+.offer__title { margin: 0 0 14px; font-size: 19px; }
+.offer__list { list-style: none; margin: 0; padding: 0; }
+.offer__item {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  font-size: 15px;
+}
+/* Маркер — фигура, а не эмодзи: набор в этой нише и так пестрит значками */
+.offer__mark {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--stamp);
+}
+.offer__foot { margin: 16px 0 0; font-size: 14px; }
+
+@media (max-width: 720px) {
+  .offer { padding: 18px; }
+}
+
 /* Карточка аркана в хабе.
    Две цели: портрет и разбор отношений. Раньше карточка была одной сплошной
    ссылкой, поэтому вторая ссылка внутри читалась как подпись. Промежуточный
@@ -483,6 +522,11 @@ html, body { overflow-x: clip; }
   /* Кнопка дублирует пункт «Моя матрица» — на узком экране лишняя */
   .site-nav .nav-cta { display: none; }
   .nav-pill { padding: 6px 10px; font-size: 13px; }
+}
+@media (max-width: 660px) {
+  /* Четвёртый пункт не помещается в строку раньше остальных.
+     Ссылка продублирована в подвале, поэтому раздел не теряется. */
+  .site-nav .nav-how { display: none; }
 }
 @media (max-width: 560px) {
   /* Остаётся знак: четыре пункта и словесный логотип в 360px не помещаются */

@@ -13,6 +13,7 @@ import {
 } from '@matrix/engine';
 import MatrixChart from './matrix-chart';
 import ArcanaSections from './arcana-sections';
+import PurchaseOffer from './purchase-offer';
 import { arcanaName } from '@/lib/arcana-names';
 import { reachGoal } from './metrika';
 
@@ -224,6 +225,16 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
 
       {!leadMode && ready && (
         <div className="stack" style={{ gap: 12 }}>
+          {/* Мост от бесплатного результата к покупке: до этого блока человек
+              видел цену, но не видел состава документа. */}
+          <PurchaseOffer
+            kind={tab}
+            center={personal?.positions.center}
+            heart={personal?.positions.heart}
+            money={personal?.positions.money}
+            nameA={nameA}
+            nameB={nameB}
+          />
           <label>
             <span className="label-text">Почта для получения PDF</span>
             <input
@@ -244,10 +255,10 @@ export default function Calculator({ initialTab = 'personal' }: { initialTab?: T
                 ? 'Полный разбор совместимости — 390 ₽'
                 : 'Полный разбор моей матрицы — 290 ₽'}
           </button>
+          {/* Состав документа перечислен выше, в PurchaseOffer — здесь только
+              то, что важно знать до нажатия кнопки. */}
           <p className="muted" style={{ marginTop: 8 }}>
-            {tab === 'compatibility'
-              ? 'PDF: обе матрицы, аркан союза, динамика пары и что с ней делать. Придёт на почту сразу после оплаты.'
-              : 'PDF: характер, отношения и деньги — полные разборы по трём ключевым арканам. Придёт на почту сразу после оплаты.'}
+            Оплата через Робокассу. Чек и документ придут на указанную почту.
           </p>
         </div>
       )}

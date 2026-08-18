@@ -53,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link className="nav-pill" href="/matrica">Моя матрица</Link>
               <Link className="nav-pill" href="/sovmestimost">Совместимость</Link>
               <Link className="nav-pill" href="/arkan">Арканы</Link>
+              <Link className="nav-pill nav-how" href="/kak-rasschitat">Как считаем</Link>
               <Link href="/matrica" className="nav-cta" style={{ marginLeft: 8 }}>
                 <button>Рассчитать бесплатно</button>
               </Link>
@@ -84,6 +85,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
 
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              {/* Дублируем методику: в шапке этот пункт скрыт на узких экранах,
+                  где четыре пилюли уже не помещаются в строку. */}
+              <Link href="/kak-rasschitat" className="muted">Как считается матрица</Link>
               <Link href="/legal/offer" className="muted">Публичная оферта</Link>
               <Link href="/legal/privacy" className="muted">Обработка персональных данных</Link>
             </div>
